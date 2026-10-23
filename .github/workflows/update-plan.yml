@@ -16,7 +16,7 @@ jobs:
 
       - name: "Obter dados do SimBrief (ID: 1217985)"
         run: |
-          curl -s -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" "https://www.simbrief.com/xml.fetch.php?userid=1217985&json=1" -o plano.json
+          curl -s -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" "https://www.simbrief.com/api/v1/flightplan.json?userid=1217985" -o plano.json
 
       - name: "Guardar alterações no GitHub"
         run: |
