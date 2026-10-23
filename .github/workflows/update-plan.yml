@@ -1,4 +1,4 @@
-name: Atualizar Plano SimBrief
+name: "Atualizar Plano SimBrief"
 
 on:
   schedule:
@@ -11,14 +11,14 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Descarregar repositório
+      - name: "Descarregar repositório"
         uses: actions/checkout@v4
 
-      - name: Obter dados do SimBrief (ID: 1217985)
+      - name: "Obter dados do SimBrief (ID: 1217985)"
         run: |
           curl -s "https://www.simbrief.com/api/xml.fetch.php?userid=1217985&json=1" -o plano.json
 
-      - name: Guardar alterações no GitHub
+      - name: "Guardar alterações no GitHub"
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -26,4 +26,3 @@ jobs:
           git add plano.json
           git diff --staged --quiet || git commit -m "Auto-atualizar plano de voo"
           git push origin main || true
-          
