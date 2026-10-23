@@ -14,9 +14,9 @@ jobs:
       - name: Descarregar repositório
         uses: actions/checkout@v4
 
-      - name: Obter dados do SimBrief (DownwindCargo540)
+      - name: Obter dados do SimBrief (ID: 1217985)
         run: |
-          curl -s "https://www.simbrief.com/api/xml.fetch.php?username=DownwindCargo540&json=1" -o plano.json
+          curl -s "https://www.simbrief.com/api/xml.fetch.php?userid=1217985&json=1" -o plano.json
 
       - name: Guardar alterações no GitHub
         run: |
