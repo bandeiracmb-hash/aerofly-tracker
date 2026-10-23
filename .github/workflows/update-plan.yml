@@ -25,3 +25,4 @@ jobs:
           git pull origin main --rebase || true
           git add plano.json
           git diff --staged --quiet || (git commit -m "Auto-atualizar plano de voo" && git push)
+
