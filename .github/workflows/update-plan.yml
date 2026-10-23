@@ -14,43 +14,64 @@ jobs:
       - name: "Descarregar repositório"
         uses: actions/checkout@v4
 
-      - name: "Obter e converter dados do SimBrief (ID: 1217985)"
+      - name: "Obter e converter dados do SimBrief"
         run: |
           python3 -c '
           import xml.etree.ElementTree as ET
           import json
           import urllib.request
+          import urllib.error
 
-          url = "https://www.simbrief.com/xml.fetch.php?userid=1217985"
-          req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
-          
-          try:
-              with urllib.request.urlopen(req) as response:
-                  xml_data = response.read()
-              
-              root = ET.fromstring(xml_data)
-              
-              def xml_to_dict(elem):
-                  d = {}
-                  for child in elem:
-                      if len(child):
-                          child_val = xml_to_dict(child)
-                      else:
-                          child_val = child.text
-                      if child.tag in d:
-                          if not isinstance(d[child.tag], list):
-                              d[child.tag] = [d[child.tag]]
-                          d[child.tag].append(child_val)
-                      else:
-                          d[child.tag] = child_val
-                  return d
+          urls = [
+              "https://www.simbrief.com/api/xml.fetch.php?userid=1217985",
+              "https://www.simbrief.com/xml.fetch.php?userid=1217985",
+              "https://www.simbrief.com/api/xml.fetch.php?username=DownwindCargo540",
+              "https://www.simbrief.com/xml.fetch.php?username=DownwindCargo540"
+          ]
 
-              data = xml_to_dict(root)
-              with open("plano.json", "w", encoding="utf-8") as f:
-                  json.dump(data, f, indent=2)
-              print("Plano convertido com sucesso para JSON!")
-          except Exception as e:
-              print(f"Erro ao processar dados: {e}")
+          headers = {
+              "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+              "Referer": "https://www.simbrief.com/system/dispatch.php"
+          }
+
+          success = False
+          for url in urls:
+              print(f"A tentar aceder a: {url}")
+              try:
+                  req = urllib.request.Request(url, headers=headers)
+                  with urllib.request.urlopen(req) as response:
+                      xml_data = response.read()
+                  
+                  root = ET.fromstring(xml_data)
+                  
+                  def xml_to_dict(elem):
+                      d = {}
+                      for child in elem:
+                          if len(child):
+                              child_val = xml_to_dict(child)
+                          else:
+                              child_val = child.text
+                          if child.tag in d:
+                              if not isinstance(d[child.tag], list):
+                                  d[child.tag] = [d[child.tag]]
+                              d[child.tag].append(child_val)
+                          else:
+                              d[child.tag] = child_val
+                      return d
+
+                  data = xml_to_dict(root)
+                  with open("plano.json", "w", encoding="utf-8") as f:
+                      json.dump(data, f, indent=2)
+                  print("Sucesso! Plano guardado em plano.json.")
+                  success = True
+                  break
+              except urllib.error.HTTPError as e:
+                  print(f"Erro HTTP {e.code} para {url}")
+              except Exception as e:
+                  print(f"Erro inesperado: {e}")
+
+          if not success:
+              print("Falha em todos os endpoints testados.")
               exit(1)
           '
 
